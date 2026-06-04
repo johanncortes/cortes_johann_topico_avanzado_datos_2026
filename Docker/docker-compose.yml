@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  oracle-db:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: oracle_db_course
+    ports:
+      - "1521:1521"  # Puerto del listener de Oracle
+    environment:
+      - ORACLE_PWD=oracle  # Contraseña para SYS y SYSTEM
+      - ORACLE_SID=XE      # SID de la base de datos
+    volumes:
+      - oracle-data:/opt/oracle/oradata  # Persistir los datos de la base de datos
+    healthcheck:
+      test: ["CMD", "sh", "-c", "echo 'SELECT 1 FROM DUAL;' | sqlplus -s sys/oracle@//localhost:1521/XE as sysdba"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  oracle-data:
+    name: oracle_data_course
